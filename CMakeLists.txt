@@ -71,7 +71,7 @@ include_directories(/usr/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party)
 
 find_package(Torch REQUIRED)
-find_package(CGAL REQUIRED)
+#find_package(CGAL REQUIRED)
 # find_package(pybind11 REQUIRED)
 
 string(REGEX REPLACE "^([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" TORCH_VERSION_CLEAN "${TORCH_VERSION}")
@@ -395,7 +395,7 @@ endmacro()
 # Just make sure you rename all the occurances of the sample's name in the C code as well
 # and the CMakeLists.txt file.
 # add_subdirectory(abseil-cpp)
-find_package(absl REQUIRED)
+#find_package(absl REQUIRED)
 # find_package(tiny-cuda-nn REQUIRED)
 
 
