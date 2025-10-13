@@ -21,7 +21,8 @@ struct SplineState : IDifferentiable
 {
   float2 distortion_parts;
   float2 cum_sum;
-  float3 padding;
+  float depth;
+  float2 padding;
   // Spline state
   float t;
   float4 drgb;
@@ -35,7 +36,8 @@ SplineState make_empty_state() {
   return {
     float2(0.f),
     float2(0.f),
-    float3(0.f),
+    0.f,
+    float2(0.f),
     0.f,
     float4(0.0f),
 
@@ -48,6 +50,12 @@ struct ControlPoint : IDifferentiable
 {
   float t;
   float4 dirac;
+}
+
+bool AlmostEqualRelative(float A, float B,
+                         float maxRelDiff = 1.2e-7f)
+{
+    return abs(A - B) <= max(abs(A), abs(B)) * maxRelDiff;
 }
 
 SplineState to_dual(in SplineState state, in ControlPoint ctrl_pt)
@@ -87,6 +95,15 @@ SplineState inverse_update_dual(
   const float weight = clip((1-safe_exp(-area)) * safe_exp(-state.logT), 0.f, 1.f);
 
   state.C = new_state.C - weight * rgb_norm;
+  const float depth_first_term = safe_div(1.f, avg.x) + (t + t_min);
+  const float depth_second_term = (safe_div(1.f, avg.x) + (new_state.t + t_min)) * safe_exp(-area);
+  if (avg.x > 1e-8f && !AlmostEqualRelative(depth_first_term, depth_second_term)) {
+    const float segment_depth = max(safe_div(1.f, avg.x) * (-safe_expm1(-area)) - (new_state.t + t_min) * safe_exp(-area) + (state.t + t_min), 0.f);
+    state.depth = new_state.depth - safe_exp(-state.logT) * segment_depth;
+  } 
+  else {
+    state.depth = new_state.depth;
+  }
 
   // Distortion Loss
   // make sure this is the right t. I believe this is correct.
@@ -123,8 +140,23 @@ SplineState update(
   let rgb_norm = safe_div(float3(avg.y, avg.z, avg.w), avg.x);
 
   new_state.logT = max(area + state.logT, 0.f);
-  const float weight = clip((1-safe_exp(-area)) * safe_exp(-state.logT), 0.f, 1.f);
+  float alpha = -safe_expm1(-area);
+  const float weight = clip(alpha * safe_exp(-state.logT), 0.f, 1.f);
   new_state.C = state.C + weight * rgb_norm;
+
+  const float AREA_THRESHOLD = 1e-6f;
+  float segment_depth_val;
+  if (avg.x < AREA_THRESHOLD) {
+      segment_depth_val = alpha * t + (1-alpha) * state.t;
+  } else {
+      segment_depth_val = safe_div(1.f, avg.x) * (-safe_expm1(-area)) 
+                        - (t + t_min) * safe_exp(-area) 
+                        + (state.t + t_min);
+  }
+
+  const float segment_depth = max(segment_depth_val, 0.f);
+  new_state.depth = state.depth + safe_exp(-state.logT) * segment_depth;
+
 
   // Distortion Loss
   // make sure this is the right t. I believe this is correct.
@@ -139,16 +171,16 @@ SplineState update(
 
 struct SplineOutput: IDifferentiable {
   float3 C;
-  float opacity;
+  float depth;
   float distortion_loss;
 };
 
 [Differentiable]
-SplineOutput extract_color(in SplineState state) {
-  let opacity = 1-exp(-state.logT);
+SplineOutput extract_color(in SplineState state, in float tmin) {
+  // let opacity = 1-exp(-state.logT);
   return {
     state.C,
-    opacity,
+    state.depth,
     state.distortion_parts.x - state.distortion_parts.y
   };
 }

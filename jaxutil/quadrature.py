@@ -73,8 +73,11 @@ def render_quadrature(tdist, query_fn, return_extras=False):
         weights[..., None] * avg_colors, axis=-2
     )  # Assuming the bg color is 0.
     alpha = jnp.sum(weights, axis=-1).reshape(-1, 1)
+    expected_termination = jnp.sum(
+        weights * t_avg, axis=-1
+    )  # Assuming the bg color is 0.
     rendered_color = jnp.concatenate([
-        rendered_color.reshape(-1, 3), alpha, dist_loss.reshape(-1, 1)
+        rendered_color.reshape(-1, 3), expected_termination.reshape(-1, 1), dist_loss.reshape(-1, 1)
     ], axis=1)
 
     if return_extras:

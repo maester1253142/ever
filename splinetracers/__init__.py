@@ -16,10 +16,8 @@ import time
 from pathlib import Path
 from typing import *
 
-import slangpy
 import torch
 from torch.autograd import Function
-from icecream import ic
 
 import sys
 sys.path.append(str(Path(__file__).parent))

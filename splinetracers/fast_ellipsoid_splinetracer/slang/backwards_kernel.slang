@@ -103,7 +103,8 @@ SplineState get_state(TensorView<float> view, uint ind) {
     return {
         float2(view[ind, 0], view[ind, 1]),
         float2(view[ind, 2], view[ind, 3]),
-        float3(view[ind, 4], view[ind, 5], view[ind, 6]),
+        view[ind, 4],
+        float2(view[ind, 5], view[ind, 6]),
         view[ind, 7],
         float4(view[ind, 8], view[ind, 9], view[ind, 10], view[ind, 11]),
 
@@ -297,14 +298,14 @@ void backwards_kernel(
     let dL_ddistortion_loss = dL_doutputs[ray_ind, 4];
     SplineOutput.Differential dL_doutput;
     dL_doutput.C = {dL_dC.x, dL_dC.y, dL_dC.z};
-    dL_doutput.opacity = dL_dC.w;
+    dL_doutput.depth = dL_dC.w;
     dL_doutput.distortion_loss = dL_ddistortion_loss;
 
     uint num_iters = max(min(iters[ray_ind], max_iters), 0);
     if (iters[ray_ind] >= max_iters-1 || iters[ray_ind] <= 0) return;
     var dtmin = diffPair(tmin, {});
     var dtmax = diffPair(tmax, {});
-    bwd_diff(extract_color)(deriv_state, dL_doutput);
+    bwd_diff(extract_color)(deriv_state, dtmin, dL_doutput);
 
     let feature_size = model.features.size(1);
     let sh_degree = int(sqrt(feature_size))-1;
