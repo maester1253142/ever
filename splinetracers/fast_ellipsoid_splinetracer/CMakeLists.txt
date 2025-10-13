@@ -55,8 +55,8 @@ pybind11_add_module(fast_ellipsoid_splinetracer_cpp_extension
   initialize_density.cu
   # CollectIds.h
   # CollectIds.cpp
-  ply_file_loader.cc
-  ply_file_loader.h
+  #ply_file_loader.cc
+  #ply_file_loader.h
   # exception.h
   py_binding.cpp
   # ${cmake_options}
@@ -70,8 +70,7 @@ set_source_files_properties(create_aabbs.cu PROPERTIES COMPILE_FLAGS "-Xcompiler
 set_source_files_properties(initialize_density.cu PROPERTIES COMPILE_FLAGS "-Xcompiler -fno-lto")
 
 target_link_libraries(fast_ellipsoid_splinetracer_cpp_extension PRIVATE
-  ${CUDA_LIBRARIES} ${TORCH_PYTHON_LIBRARIES} ${TORCH_LIBRARIES} torch torch_cpu c10 torch_cuda CGAL::CGAL
-  absl::base absl::statusor absl::status absl::strings absl::str_format m
+  ${CUDA_LIBRARIES} ${TORCH_PYTHON_LIBRARIES} ${TORCH_LIBRARIES} torch torch_cpu c10 torch_cuda m
   )
 set_target_properties(fast_ellipsoid_splinetracer_cpp_extension
     PROPERTIES
