@@ -95,15 +95,18 @@ SplineState inverse_update_dual(
   const float weight = clip((1-safe_exp(-area)) * safe_exp(-state.logT), 0.f, 1.f);
 
   state.C = new_state.C - weight * rgb_norm;
-  const float depth_first_term = safe_div(1.f, avg.x) + (t + t_min);
-  const float depth_second_term = (safe_div(1.f, avg.x) + (new_state.t + t_min)) * safe_exp(-area);
-  if (avg.x > 1e-8f && !AlmostEqualRelative(depth_first_term, depth_second_term)) {
-    const float segment_depth = max(safe_div(1.f, avg.x) * (-safe_expm1(-area)) - (new_state.t + t_min) * safe_exp(-area) + (state.t + t_min), 0.f);
-    state.depth = new_state.depth - safe_exp(-state.logT) * segment_depth;
-  } 
-  else {
-    state.depth = new_state.depth;
+  const float AREA_THRESHOLD = 1e-6f;
+  float segment_depth_val;
+  if (avg.x < AREA_THRESHOLD) {
+      segment_depth_val = alpha * t + (1-alpha) * state.t;
+  } else {
+      segment_depth_val = safe_div(1.f, avg.x) * (-safe_expm1(-area)) 
+                        - (t + t_min) * safe_exp(-area) 
+                        + (state.t + t_min);
   }
+
+  const float segment_depth = max(segment_depth_val, 0.f);
+  new_state.depth = state.depth - safe_exp(-state.logT) * segment_depth;
 
   // Distortion Loss
   // make sure this is the right t. I believe this is correct.
