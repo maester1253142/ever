@@ -95,6 +95,8 @@ SplineState inverse_update_dual(
   const float weight = clip((1-safe_exp(-area)) * safe_exp(-state.logT), 0.f, 1.f);
 
   state.C = new_state.C - weight * rgb_norm;
+  float alpha = -safe_expm1(-area);
+
   const float AREA_THRESHOLD = 1e-6f;
   float segment_depth_val;
   if (avg.x < AREA_THRESHOLD) {
