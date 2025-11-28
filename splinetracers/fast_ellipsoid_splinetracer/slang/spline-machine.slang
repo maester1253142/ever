@@ -21,8 +21,7 @@ struct SplineState : IDifferentiable
 {
   float2 distortion_parts;
   float2 cum_sum;
-  float depth;
-  float2 padding;
+  float3 padding;
   // Spline state
   float t;
   float4 drgb;
@@ -36,8 +35,7 @@ SplineState make_empty_state() {
   return {
     float2(0.f),
     float2(0.f),
-    0.f,
-    float2(0.f),
+    float3(0.f),
     0.f,
     float4(0.0f),
 
@@ -108,7 +106,7 @@ SplineState inverse_update_dual(
   }
 
   const float segment_depth = max(segment_depth_val, 0.f);
-  new_state.depth = state.depth - safe_exp(-state.logT) * segment_depth;
+  new_state.padding[0] = state.padding[0] - safe_exp(-state.logT) * segment_depth;
 
   // Distortion Loss
   // make sure this is the right t. I believe this is correct.
@@ -160,7 +158,7 @@ SplineState update(
   }
 
   const float segment_depth = max(segment_depth_val, 0.f);
-  new_state.depth = state.depth + safe_exp(-state.logT) * segment_depth;
+  new_state.padding[0] = state.padding[0] + safe_exp(-state.logT) * segment_depth;
 
 
   // Distortion Loss
@@ -185,7 +183,7 @@ SplineOutput extract_color(in SplineState state, in float tmin) {
   // let opacity = 1-exp(-state.logT);
   return {
     state.C,
-    state.depth,
+    state.padding[0],
     state.distortion_parts.x - state.distortion_parts.y
   };
 }

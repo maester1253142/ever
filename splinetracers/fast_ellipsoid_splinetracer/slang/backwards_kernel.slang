@@ -103,8 +103,7 @@ SplineState get_state(TensorView<float> view, uint ind) {
     return {
         float2(view[ind, 0], view[ind, 1]),
         float2(view[ind, 2], view[ind, 3]),
-        view[ind, 4],
-        float2(view[ind, 5], view[ind, 6]),
+        float3(view[ind, 4], view[ind, 5], view[ind, 6]),
         view[ind, 7],
         float4(view[ind, 8], view[ind, 9], view[ind, 10], view[ind, 11]),
 
