@@ -19,7 +19,7 @@ cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 # This sets up the name of our project.  For our purposes the main thing this controls is
 # the name of the VS solution file.
 project(splinetracers VERSION 1.0)
-# set(CMAKE_CUDA_ARCHITECTURES all)
+
 
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
