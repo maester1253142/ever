@@ -162,11 +162,11 @@ float safe_log(float v) {
 }
 
 void bw_expm1(inout DifferentialPair<float> v, float.Differential R) {
-  v = DifferentialPair<float>(v.p, exp(v.p) * R);
+  v = DifferentialPair<float>(v.p, -exp(v.p) * R);
 }
 
 [BackwardDerivative(bw_expm1)]
-float safe_expm1(float v) {
+float _expm1(float v) {
   __intrinsic_asm "expm1($0)";
 }
 
@@ -180,7 +180,7 @@ float log1mexp(float x) {
   if (x > 0.30102999566) {
     return _log1p(max(-exp(-x), -1+1e-5));
   } else {
-    return log(max(-safe_expm1(-x), 1e-20));
+    return log(max(-_expm1(-x), 1e-20));
   }
 }
 

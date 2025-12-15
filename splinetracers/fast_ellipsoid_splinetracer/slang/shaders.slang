@@ -225,8 +225,8 @@ void rg_float()
         if (end) break;
 
     }
-    let output = extract_color(state, tmin);
-    fimage[idx.x] = {output.C.x, output.C.y, output.C.z, output.depth};
+    let output = extract_color(state);
+    fimage[idx.x] = {output.C.x, output.C.y, output.C.z, output.opacity};
     let dual_state = to_dual(state, ctrl_pt);
     last_state[idx.x] = dual_state;
     last_dirac[idx.x] = ctrl_pt.dirac;

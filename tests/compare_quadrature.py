@@ -87,7 +87,7 @@ class QuadratureTest(parameterized.TestCase):
         density = density_multi*torch.rand(N, 1, dtype=torch.float32).to(device)
         features = torch.rand(N, 1, 3, dtype=torch.float32).to(device)
 
-        tmin = 0*random.random()*0.3
+        tmin = random.random()*0.3
         color1, extras1 = quad.trace_rays(
                   mean, scale, quat, density, features, rayo, rayd,
                   tmin, 3, return_extras=True, kernel=kernel)

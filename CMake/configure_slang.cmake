@@ -67,7 +67,7 @@ macro(cuda_compile_and_embed output_var cuda_file)
   set(intermediate_file2 ${output_var}.cu)
   add_custom_command(
     OUTPUT ${ptx_file}
-    COMMAND nvcc -I${OptiX_INSTALL_DIR}/include --ptx ${cuda_file} -o ${ptx_file}
+    COMMAND nvcc -I${OptiX_INSTALL_DIR}/include --ptx ${cuda_file} -o ${ptx_file} -ccbin /usr/bin/gcc-11
 
 
     # COMMAND ${SLANGC} ${cuda_file} -o ${intermediate_file1} -dump-intermediates -line-directive-mode none && cat /opt/optix/preamble.h ${intermediate_file1} > ${intermediate_file2} && nvcc -I${OptiX_INSTALL_DIR}/include -lineinfo --ptx ${intermediate_file2} -ccbin /usr/bin/gcc-11

@@ -19,7 +19,7 @@ cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 # This sets up the name of our project.  For our purposes the main thing this controls is
 # the name of the VS solution file.
 project(splinetracers VERSION 1.0)
-
+# set(CMAKE_CUDA_ARCHITECTURES all)
 
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
@@ -71,7 +71,7 @@ include_directories(/usr/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party)
 
 find_package(Torch REQUIRED)
-#find_package(CGAL REQUIRED)
+find_package(CGAL REQUIRED)
 # find_package(pybind11 REQUIRED)
 
 string(REGEX REPLACE "^([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" TORCH_VERSION_CLEAN "${TORCH_VERSION}")
@@ -395,7 +395,7 @@ endmacro()
 # Just make sure you rename all the occurances of the sample's name in the C code as well
 # and the CMakeLists.txt file.
 # add_subdirectory(abseil-cpp)
-#find_package(absl REQUIRED)
+find_package(absl REQUIRED)
 # find_package(tiny-cuda-nn REQUIRED)
 
 
